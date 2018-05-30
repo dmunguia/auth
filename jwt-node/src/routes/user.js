@@ -11,7 +11,7 @@ router.post('/', async (req, res) => {
     const user = await userService.insert(
       req.body.email,
       req.body.password);
-      
+
     res.status(200).json(user);
   } catch (err) {
     res.status(500).json({error: err});
@@ -33,7 +33,8 @@ router.post('/authentication', async (req, res) => {
 
       res.status(200).json({
         authorized: true,
-        token: jwtToken
+        token: jwtToken,
+        user: req.body.email
       });
 
     } else {
