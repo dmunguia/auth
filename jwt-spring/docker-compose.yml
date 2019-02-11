@@ -1,0 +1,49 @@
+version: '3.3'
+services:
+        build:
+                image: openjdk:8-jdk-alpine
+                depends_on:
+                        - db
+                links:
+                        - 'db:db'
+                user: "${DOCKER_COMPOSE_RUN_AS_USER}"
+                working_dir: /app
+                volumes:
+                        - .:/app
+                        - gradle-dist:/root/.gradle
+                environment:
+                        - APP_DEMO_DB_PWD
+                        - APP_DEMO_AUTH_JWT_SECRET
+
+        demo:
+                image: openjdk:8-jdk-alpine
+                depends_on:
+                        - db
+                links:
+                        - 'db:db'
+                user: "${DOCKER_COMPOSE_RUN_AS_USER}"
+                working_dir: /app
+                volumes:
+                        - .:/app
+                        - gradle-dist:/root/.gradle
+                ports:
+                        - '8080:8080'
+                        - '5005:5005'
+                command: ./gradlew bootRun
+                environment:
+                        - APP_DEMO_DB_PWD
+                        - APP_DEMO_AUTH_JWT_SECRET
+
+        db:
+                image: mysql
+                volumes:
+                        - mysql-data:/var/lib/mysql
+                environment:
+                        - MYSQL_ROOT_PASSWORD=root
+
+volumes:
+        gradle-dist:
+                external: false
+
+        mysql-data:
+                external: false
